@@ -1,0 +1,10 @@
+-Pulse Width Modulation
+Method of controlling servo motors.
+Allows to control motor with digital signals instead of analog ones.
+Width of pulse correspnds to how much we want to move motor.
+A certain pulse width (found in datasheet) should give the 0 position pulse.
+
+-Transimpedance Amplifier
+Acts as a buffers.
+Allows us to input voltage signals into microprocessor instead of current.
+Also allows us to change gain to something suitable.
