@@ -8,3 +8,19 @@ A certain pulse width (found in datasheet) should give the 0 position pulse.
 Acts as a buffers.
 Allows us to input voltage signals into microprocessor instead of current.
 Also allows us to change gain to something suitable.
+
+
+01/12/2023
+
+-Servo Motors Work!
+Replace 180 degrees servo motor with 360 degrees for the xy axis rotation
+360 degree motor has oontinous rotation. We need to control speed now, not angle
+
+-Photodiode
+Sensitvitiy too low-we increased gain
+Current could possibly be too high now so we think we should add a fuse
+
+Gain on the op amp is currenttly 100K/2.2K - roughly 45x gain (5% tolerance). 
+Should swap out LM741 for LM341 due to the fact that the LM341 can perfrom all the ampliying for the 4 photodiodes using one op amp rather than 4.
+220k resistor between photodiode an GND (%5 tolerance). 
+
