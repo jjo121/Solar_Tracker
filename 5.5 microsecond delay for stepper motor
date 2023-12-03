@@ -1,0 +1,25 @@
+
+psect	udata_acs
+delayseveral5count: ds	1	
+delay5count:	    ds	1
+random:		    ds	1
+
+  
+delayseveral5us: ;delay for 5.5 microseconds a certain number of times (given in WR)
+    movf    delayseveral5count
+    bra	    delay5us
+leaveloop:
+    dcfsnz  delayseveral5count
+    return
+    movlw   0x00
+    movwf   random
+    bra	    delay5us
+    
+delay5us:
+    movlw   0x46
+    movwf   delay5count
+delay5loop:
+    decfsz  delay5count
+    bra	    delay5loop
+    bra	    leaveloop
+
