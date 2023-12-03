@@ -1,0 +1,10 @@
+;Add this to LCD file
+LCD_clear:
+	movlw	0xFF
+	call	LCD_delay_ms
+	movlw	0xFF
+	call	LCD_delay_ms
+	movlw	00000001B
+	call	LCD_Send_Byte_I
+	call	LCD_delay
+	return
