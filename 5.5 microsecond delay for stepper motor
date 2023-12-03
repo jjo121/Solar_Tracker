@@ -16,7 +16,7 @@ leaveloop:
     bra	    delay5us
     
 delay5us:
-    movlw   0x46
+    movlw   0x29 ;41 in decimal
     movwf   delay5count
 delay5loop:
     decfsz  delay5count
