@@ -140,5 +140,45 @@ start:	bra	measurephotodiode
 ;	return
 
 	end	rst
+Replaced the following:
+#include <xc.inc>
+global Photodiode_EastL, Photodiode_EastH,Photodiode_WestL,Photodiode_WestH
+extrn	UART_Setup, UART_Transmit_Message  ; external uart subroutines
+extrn	LCD_Setup, LCD_Write_Message, LCD_Write_Hex ; external LCD subroutines
+extrn	ADC_Setup0,ADC_Setup1,ADC_Setup2,ADC_Setup3, ADC_Read		   ; external ADC subroutines
+extrn MotorSetup, MoveEast, MoveWest	
+psect	udata_acs   ; reserve data space in access ram
+;counter:    ds 1    ; reserve one byte for a counter variable
+;delay_count:ds 1    ; reserve one byte for counter in the delay routine
+posEW:		    ds	1
+Photodiode_EastL:   ds	1	    ; Reserve space for any variables
+Photodiode_EastH:   ds	1
+Photodiode_WestL:   ds	1
+Photodiode_WestH:   ds	1
+tempCompare1:	    ds	1
+tempCompare2:	    ds	1
+status1:	    ds	1
+status2:	    ds	1
+    
+psect	udata_bank4 ; reserve data anywhere in RAM (here at 0x400)
+myArray:    ds 0x80 ; reserve 128 bytes for message data
 
+psect	data    
+	; ******* myTable, data in programme memory, and its length *****
+myTable:
+	db	'H','e','l','l','o',' ','W','o','r','l','d','!',0x0a
+					; message, plus carriage return
+	myTable_l   EQU	13	; length of data
+	align	2
+    
+psect	code, abs	
+rst: 	org 0x0
+ 	goto	setup
+
+setup:  call	MotorSetup
+	call    ADC_Setup0
+	call    ADC_Setup1
+	movlw	0x00
+	movwf	posEW
+	call	MoveEast
 
