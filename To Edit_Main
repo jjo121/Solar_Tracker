@@ -1,0 +1,306 @@
+#include <xc.inc>
+
+global  Photodiode_0H, Photodiode_0L, Photodiode_1L, Photodiode_1H   
+global  Photodiode_2L, Photodiode_2H, Photodiode_3L, Photodiode_3H
+
+global	posEW, SolarL, SolarH
+
+    
+extrn	UART_Setup, UART_Transmit_Message  ; external uart subroutines
+extrn	LCD_Setup, LCD_Write_Message, LCD_Write_Hex,LCD_delay_ms ; external LCD subroutines
+extrn	ADC_Setup0,ADC_Setup1,ADC_Setup2,ADC_Setup3,ADC_Setup4, ADC_Read; external ADC subroutines
+extrn	MotorSetup, MoveEast, MoveXZRight,MoveXZLeft, stop
+extrn	compare1, compare2,average_p0p1_low
+extrn	status1, status2, tempCompare1, tempCompare2
+    
+psect	udata_acs   ; reserve data space in access ram
+
+posEW:		    ds	1
+Photodiode_0L:	    ds	1	    ; Reserve space for any variables
+Photodiode_0H:	    ds	1
+Photodiode_1L:	    ds	1
+Photodiode_1H:	    ds	1
+Photodiode_3L:	    ds	1	    ; Reserve space for any variables
+Photodiode_3H:	    ds	1
+Photodiode_2L:	    ds	1
+Photodiode_2H:	    ds	1
+SolarL:		    ds	1
+SolarH:		    ds	1
+
+    
+psect	udata_bank4 ; reserve data anywhere in RAM (here at 0x400)
+myArray:    ds 0x80 ; reserve 128 bytes for message data
+
+psect	data    
+	; ******* myTable, data in programme memory, and its length *****
+myTable:
+	db	'H','e','l','l','o',' ','W','o','r','l','d','!',0x0a
+					; message, plus carriage return
+	myTable_l   EQU	13	; length of data
+	align	2
+    
+psect	code, abs	
+rst: 	org 0x0
+ 	goto	setup
+
+setup:  call	MotorSetup; Add lines which move motor to 0 positions
+	movlw	0x30
+	movwf	posEW
+	goto	start
+
+measurephotodiode:
+	call	ADC_Setup0
+	movlw	0x05
+	call	LCD_delay_ms
+	call    ADC_Read
+	call    ADC_Read
+	movf    ADRESH,W, A
+	movwf   Photodiode_0H    ;high byte stored
+	movf    ADRESL,W, A
+	movwf   Photodiode_0L    ;low byte stored
+	call	ADC_Setup1
+	movlw	0x05
+	call	LCD_delay_ms
+	call    ADC_Read
+	call    ADC_Read
+	movf    ADRESH,W, A
+	movwf   Photodiode_1H    ;high byte stored
+	movf    ADRESL,W, A
+	movwf   Photodiode_1L    ;low byte stored
+	call	ADC_Setup2
+	movlw	0x05
+	call	LCD_delay_ms
+	call    ADC_Read
+	call    ADC_Read
+	movf    ADRESH,W, A
+	movwf   Photodiode_2H    ;high byte stored
+	movf    ADRESL,W, A
+	movwf   Photodiode_2L    ;low byte stored
+	call	ADC_Setup3
+	movlw	0x05
+	call	LCD_delay_ms
+	call    ADC_Read
+	call    ADC_Read
+	movf    ADRESH,W, A
+	movwf   Photodiode_3H    ;high byte stored
+	movf    ADRESL,W, A
+	movwf   Photodiode_3L    ;low byte stored
+	return
+	
+
+moveMotorEW1:	;Uses status of high bytes to check whether to move East or West
+	movlw	0x01
+	cpfseq	status1
+	bra	moveMotorWest
+	bra	moveMotorEast
+moveMotorEW2:	;Uses status of high bytes to check whether to move East or West
+	movlw	0x01
+	cpfseq	status2
+	bra	moveMotorWest
+	bra	moveMotorEast
+moveMotorEast:
+	movlw	0xB3;179
+	cpfslt	posEW
+	incf	posEW
+	call	MoveEast
+	return
+
+moveMotorWest:
+	movlw	0x00;0
+	cpfsgt	posEW
+	decf	posEW
+	call	MoveEast
+	return
+    
+		
+start:	;movlw	0x20
+	;movwf	posEW
+	;call	MoveEast
+	;bra	start
+	;call	stop
+	;bra	start
+	;call	MoveWest
+	;bra	start
+ 	call	measurephotodiode
+	call	averagep0p1Low
+	call	compare1
+	;call	compare1
+	;movlw	0x01		;tolerance high byte
+	;cpfslt	tempCompare1	;Checks the difference between higher bits of photodiode 2 & 3 and if it is less than 1 it goes to movement
+	;call	moveMotorEW1	;Makes movement based on higher bytes of 2 &3
+	;movlw	0x0F		;tolerance low byte
+	;cpfslt	tempCompare2	;Checks the difference between lower bits of photodiode 2 & 3 and if it is less than 1 it goes to movement
+	;call	moveMotorEW2	;Makes movement based on higher bytes of 2 &3
+	;bra	start
+
+;	; ******* Programme FLASH read Setup Code ***********************
+;setup:	bcf	CFGS	; point to Flash program memory  
+;	bsf	EEPGD 	; access Flash program memory
+;	call	UART_Setup	; setup UART
+;	call	LCD_Setup	; setup UART
+;	call	ADC_Setup	; setup ADC
+;	goto	start
+;	
+;	; ******* Main programme ****************************************
+;start: 	lfsr	0, myArray	; Load FSR0 with address in RAM	
+;	movlw	low highword(myTable)	; address of data in PM
+;	movwf	TBLPTRU, A		; load upper bits to TBLPTRU
+;	movlw	high(myTable)	; address of data in PM
+;	movwf	TBLPTRH, A		; load high byte to TBLPTRH
+;	movlw	low(myTable)	; address of data in PM
+;	movwf	TBLPTRL, A		; load low byte to TBLPTRL
+;	movlw	myTable_l	; bytes to read
+;	movwf 	counter, A		; our counter register
+;loop: 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
+;	movff	TABLAT, POSTINC0; move data from TABLAT to (FSR0), inc FSR0	
+;	decfsz	counter, A		; count down to zero
+;	bra	loop		; keep going until finished
+;		
+;	movlw	myTable_l	; output message to UART
+;	lfsr	2, myArray
+;	call	UART_Transmit_Message
+;
+;	movlw	myTable_l-1	; output message to LCD
+;				; don't send the final carriage return to LCD
+;	lfsr	2, myArray
+;	call	LCD_Write_Message
+;	
+;measure_loop:
+;	call	ADC_Read
+;	movf	ADRESH, W, A
+;	call	LCD_Write_Hex
+;	movf	ADRESL, W, A
+;	call	LCD_Write_Hex
+;	goto	measure_loop		; goto current line in code
+;	
+;	; a delay subroutine if you need one, times around loop in delay_count
+;delay:	decfsz	delay_count, A	; decrement until zero
+;	bra	delay
+;	return
+
+;;	goto	start
+;
+;;measurephotodiode:	
+;;	call    ADC_Read
+;;	movf    ADRESH,W, A
+;;	movwf   Photodiode_EastH    ;high byte stored
+;;	movf    ADRESL,W, A
+;;	movwf   Photodiode_EastL    ;low byte stored
+;;	call    ADC_Read1
+;;	movf    ADRESH,W, A
+;;	movwf   Photodiode_WestH    ;high byte stored
+;;	movf    ADRESL,W, A
+;;	movwf   Photodiode_WestL    ;low byte stored
+;	
+;;compare1:
+;;	movlw	0x01		    ;temp
+;;	movwf	Photodiode_EastH    ;temp
+;;	movlw	0x02		    ;temp
+;;	movwf	Photodiode_WestH    ;temp
+;;	movf	Photodiode_EastH
+;;	subwf	Photodiode_WestH
+;;	movwf	tempCompare1
+;;	btfss	STATUS, 0
+;;	bra	compare2
+;;	comf	tempCompare1
+;;	incf	tempCompare1
+;;	movlw	0x01
+;;	movwf	status1
+;;	bcf	STATUS,0
+;;compare2:	
+;;	movf	Photodiode_EastL
+;;	subwf	Photodiode_WestL
+;;	movwf	tempCompare2
+;;	btfss	STATUS, 0
+;;	return
+;;	comf	tempCompare2
+;;	incf	tempCompare2
+;;	movlw	0x01
+;;	movwf	status2
+;;	return
+;;
+;;moveMotorEW1:	;Uses status of high bits to check whether to move East or West
+;;	movlw	0x01
+;;	cpfseq	status1
+;;	bra	moveMotorWest
+;;	bra	moveMotorEast
+;;moveMotorEW2:	;Uses status of high bits to check whether to move East or West
+;;	movlw	0x01
+;;	cpfseq	status2
+;;	bra	moveMotorWest
+;;	bra	moveMotorEast
+;;moveMotorEast:
+;;	movlw	0xB3
+;;	cpfseq	posEW
+;;	incf	posEW
+;;	call	MoveEast
+;;	return
+;;
+;;moveMotorWest:
+;;	movf	posEW
+;;	call	MoveEast
+;;	return
+;;    
+;;		
+;;start:	;bra	measurephotodiode
+;	bra	compare
+; 	movlw	0x00
+; 	cpfslt	tempCompare1
+ ;	bra	moveMotorEW
+ ;	movlw	0x01
+ ;	cpfslt	tempCompare2
+ ;	bra	moveMotorEW
+	
+	
+	
+
+
+    
+    
+
+;	; ******* Programme FLASH read Setup Code ***********************
+;setup:	bcf	CFGS	; point to Flash program memory  
+;	bsf	EEPGD 	; access Flash program memory
+;	call	UART_Setup	; setup UART
+;	call	LCD_Setup	; setup UART
+;	call	ADC_Setup	; setup ADC
+;	goto	start
+;	
+;	; ******* Main programme ****************************************
+;start: 	lfsr	0, myArray	; Load FSR0 with address in RAM	
+;	movlw	low highword(myTable)	; address of data in PM
+;	movwf	TBLPTRU, A		; load upper bits to TBLPTRU
+;	movlw	high(myTable)	; address of data in PM
+;	movwf	TBLPTRH, A		; load high byte to TBLPTRH
+;	movlw	low(myTable)	; address of data in PM
+;	movwf	TBLPTRL, A		; load low byte to TBLPTRL
+;	movlw	myTable_l	; bytes to read
+;	movwf 	counter, A		; our counter register
+;loop: 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
+;	movff	TABLAT, POSTINC0; move data from TABLAT to (FSR0), inc FSR0	
+;	decfsz	counter, A		; count down to zero
+;	bra	loop		; keep going until finished
+;		
+;	movlw	myTable_l	; output message to UART
+;	lfsr	2, myArray
+;	call	UART_Transmit_Message
+;
+;	movlw	myTable_l-1	; output message to LCD
+;				; don't send the final carriage return to LCD
+;	lfsr	2, myArray
+;	call	LCD_Write_Message
+;	
+;measure_loop:
+;	call	ADC_Read
+;	movf	ADRESH, W, A
+;	call	LCD_Write_Hex
+;	movf	ADRESL, W, A
+;	call	LCD_Write_Hex
+;	goto	measure_loop		; goto current line in code
+;	
+;	; a delay subroutine if you need one, times around loop in delay_count
+;delay:	decfsz	delay_count, A	; decrement until zero
+;	bra	delay
+;	return
+
+	end	rst
