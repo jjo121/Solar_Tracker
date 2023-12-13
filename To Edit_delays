@@ -1,0 +1,26 @@
+#include <xc.inc>
+
+global delayseveral5us    
+psect	udata_acs ; named variables in access ram
+delayseveral5count: ds	1	
+delay5count:	    ds	1
+random:		    ds	1
+
+psect	lcd_code,class=CODE
+delayseveral5us: ;delay for 5.5 microseconds a certain number of times (given in WR)
+    movwf   delayseveral5count
+    bra	    delay5us
+leaveloop:
+    dcfsnz  delayseveral5count
+    return
+    movlw   0x00
+    movwf   random
+    bra	    delay5us  
+delay5us:
+    movlw   0x1A;41 in decimal
+    movwf   delay5count
+delay5loop:
+    decfsz  delay5count
+    bra	    delay5loop
+    bra	    leaveloop                        ; Return from the subroutine
+    end
