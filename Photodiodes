@@ -1,0 +1,80 @@
+#include <xc.inc>
+
+
+global	measurephotodiode, measuresolar
+    
+global  Photodiode_0L, Photodiode_0H,Photodiode_1L,Photodiode_1H
+global  Photodiode_2L, Photodiode_2H,Photodiode_3L,Photodiode_3H
+global  SolarL, SolarH 
+;delay subroutine
+extrn	delay_ms 
+    
+;adc variables
+extrn	ADC_Setup0, ADC_Setup1, ADC_Setup2, ADC_Setup3, ADC_Setup4, ADC_Read   
+    
+psect	udata_acs
+	
+Photodiode_0L:	    ds	1
+Photodiode_0H:	    ds	1
+Photodiode_1L:	    ds	1
+Photodiode_1H:	    ds	1
+Photodiode_3L:	    ds	1
+Photodiode_3H:	    ds	1
+Photodiode_2L:	    ds	1
+Photodiode_2H:	    ds	1
+SolarL:		    ds	1
+SolarH:		    ds	1
+	
+psect	adc_code, class=CODE
+
+measurephotodiode:
+	call	ADC_Setup0
+	movlw	0x01
+	call	delay_ms
+	call    ADC_Read
+	call    ADC_Read
+	movf    ADRESH,W, A
+	movwf   Photodiode_0H    ;high byte stored
+	movf    ADRESL,W, A
+	movwf   Photodiode_0L    ;low byte stored
+	call	ADC_Setup1
+	movlw	0x01
+	call	delay_ms
+	call    ADC_Read
+	call    ADC_Read
+	movf    ADRESH,W, A
+	movwf   Photodiode_1H    ;high byte stored
+	movf    ADRESL,W, A
+	movwf   Photodiode_1L    ;low byte stored
+	call	ADC_Setup2
+	movlw	0x01
+	call	delay_ms
+	call    ADC_Read
+	call    ADC_Read
+	movf    ADRESH,W, A
+	movwf   Photodiode_2H    ;high byte stored
+	movf    ADRESL,W, A
+	movwf   Photodiode_2L    ;low byte stored
+	call	ADC_Setup3
+	movlw	0x01
+	call	delay_ms
+	call    ADC_Read
+	call    ADC_Read
+	movf    ADRESH,W, A
+	movwf   Photodiode_3H    ;high byte stored
+	movf    ADRESL,W, A
+	movwf   Photodiode_3L    ;low byte stored
+	return
+
+measuresolar:
+	call	ADC_Setup4
+	movlw	0x01
+	call	delay_ms
+	call    ADC_Read
+	call    ADC_Read
+	movf    ADRESH,W, A
+	movwf   SolarH		 ;high byte stored
+	movf    ADRESL,W, A
+	movwf   SolarL    ;low byte stored
+	end
+    
