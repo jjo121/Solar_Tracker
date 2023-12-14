@@ -33,11 +33,11 @@ delay5loop:
 
 delay_ms:		                ; delay given in ms in W
 	movwf	ms_cnt, A
-lcdlp2:	
-    movlw	250	                ; 1 ms delay
+lp2:	
+	movlw	250	                ; 1 ms delay
 	call	delay_x4us	
 	decfsz	ms_cnt, A
-	bra	    lp2
+	bra	lp2
 	return
     
 delay_x4us:		                ; delay given in chunks of 4 microsecond in W
@@ -54,9 +54,9 @@ delay_x4us:		                ; delay given in chunks of 4 microsecond in W
 ms_delay:			            ; delay routine	4 instruction loop == 250ns	    
 	movlw 	0x00		        ; W=0
 lp1:	
-    decf 	ms_cnt_l, F, A	    ; no carry when 0x00 -> 0xff
+	decf 	ms_cnt_l, F, A	    ; no carry when 0x00 -> 0xff
 	subwfb 	ms_cnt_h, F, A	    ; no carry when 0x00 -> 0xff
-	bc 	    lp1		            ; carry, then loop again
+	bc 	lp1		            ; carry, then loop again
 	return			            ; carry reset so return
 
     end
