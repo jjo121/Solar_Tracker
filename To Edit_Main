@@ -93,11 +93,13 @@ moveMotorEW1:	;Uses status of high bytes to check whether to move East or West
 	cpfseq	status1
 	bra	moveMotorWest
 	bra	moveMotorEast
+
 moveMotorEW2:	;Uses status of high bytes to check whether to move East or West
 	movlw	0x01
 	cpfseq	status2
 	bra	moveMotorWest
 	bra	moveMotorEast
+
 moveMotorEast:
 	movlw	0xB3;179
 	cpfslt	posEW
