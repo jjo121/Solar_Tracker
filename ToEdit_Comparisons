@@ -99,7 +99,7 @@ compare_p0p1_p2p3_h:
 	movwf	status_p0p1_p2p3_h
 	bcf	STATUS, 0
 
-compare_p0p2_p1p3_l:	
+compare_p0p1_p2p3_l:	
 	movf	totalp0p1L, W
 	subwf	totalp2p3L, 0
 	movwf	difference_p0p1_p2p3_l
