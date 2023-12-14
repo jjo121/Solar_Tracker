@@ -1,31 +1,32 @@
 #include <xc.inc>
 
-global compare1, compare2,average_p0p1_low
-global compare_p0p1_h, 
-global status1, status2, tempCompare1, tempCompare2,quotient
+global status_p0p2_p1p3_l, status_p0p2_p1p3_h, status_p0p1_p2p3_l, status_p0p1_p2p3_h
+global difference_p0p2_p1p3_l, difference_p0p2_p1p3_h, difference_p0p1_p2p3_l, difference_p0p1_p2p3_h
     
 extrn  Photodiode_0L, Photodiode_0H,Photodiode_1L,Photodiode_1H
 extrn  Photodiode_2L, Photodiode_2H,Photodiode_3L,Photodiode_3H
- 
-    
+
 psect	udata_acs
 	
-difference_p2p3_l:  ds	1
-difference_p2p3_h:  ds	1
-difference_p1p3_l:  ds	1
-difference_p1p3_h:  ds	1
-status_p2p3_l:	    ds	1
-status_p2p3_h:	    ds	1
-status_p1p3_l:	    ds	1
-status_p1p3_h:	    ds	1
-totalp0p1H:	    ds  1
-totalp0p2H:	    ds  1
-totalp1p3H:	    ds  1  
-totalp2p3H:	    ds  1
-totalp0p1L:	    ds  1
-totalp0p2L:	    ds  1
-totalp1p3L:	    ds  1  
-totalp2p3L:	    ds  1
+difference_p0p2_p1p3_l:  	ds  1
+difference_p0p2_p1p3_h:  	ds  1
+difference_p0p1_p2p3_l:  	ds  1
+difference_p0p1_p2p3_h:  	ds  1
+
+status_p0p2_p1p3_l:		ds  1
+status_p0p2_p1p3_h:		ds  1
+status_p0p1_p2p3_l:	    	ds  1
+status_p0p1_p2p3_h:	   	ds  1
+
+totalp0p1H:	  	ds  1
+totalp0p2H:	    	ds  1
+totalp1p3H:	    	ds  1  
+totalp2p3H:	    	ds  1
+totalp0p1L:	    	ds  1
+totalp0p2L:	    	ds  1
+totalp1p3L:	    	ds  1  
+totalp2p3L:	    	ds  1
+
 psect	adc_code, class=CODE
 
 average:
@@ -61,55 +62,53 @@ average:
 	addwf	Photodiode_3L,0
 	movwf	totalp2p3L
 	return
-	
-	
 
-compare_p0p2_p1p3:
-	movf	Photodiode_2H,W
-	subwf	Photodiode_3H,0
-	movwf	difference_p2p3_h
+compare_p0p2_p1p3_h:
+	movf	totalp0p2H, W
+	subwf	totalp1p3H, 0
+	movwf	difference_p0p2_p1p3_h
 	btfsc	STATUS, 0
-	bra	compare2
-	comf	difference_p2p3_h
-	incf	difference_p2p3_h
+	bra	compare_p0p2_p1p3_l
+	comf	difference_p0p2_p1p3_h
+	incf	difference_p0p2_p1p3_h
 	movlw	0x01
-	movwf	status_p2p3_h
-	bcf	STATUS,0
-compare2:	
-	movf	Photodiode_2L,W
-	subwf	Photodiode_3L,0
-	movwf	difference_p2p3_l
+	movwf	status_p0p2_p1p3_h
+	bcf	STATUS, 0
+
+compare_p0p2_p1p3_l:	
+	movf	totalp0p2L, W
+	subwf	totalp1p3L, 0
+	movwf	difference_p0p2_p1p3_l
 	btfsc	STATUS, 0
 	return
-	comf	difference_p2p3_l
-	incf	difference_p2p3_l
+	comf	difference_p0p2_p1p3_l
+	incf	difference_p0p2_p1p3_l
 	movlw	0x01
-	movwf	status_p2p3_l
+	movwf	status_p0p2_p1p3_l
 	return
 
-compare_p1p3_h:
-	movf	Photodiode_1H,W
-	subwf	Photodiode_3H,0
-	movwf	difference_p1p3_h
+compare_p0p1_p2p3_h:
+	movf	totalp0p1H, W
+	subwf	totalp2p3H, 0
+	movwf	difference_p0p1_p2p3_h
 	btfsc	STATUS, 0
-	bra	compare_p1p3_l
-	comf	difference_p1p3_h
-	incf	difference_p1p3_h
+	bra	compare_p0p1_p2p3_l
+	comf	difference_p0p1_p2p3_h
+	incf	difference_p0p1_p2p3_h
 	movlw	0x01
-	movwf	status_p1p3_h
-	bcf	STATUS,0
+	movwf	status_p0p1_p2p3_h
+	bcf	STATUS, 0
 
-compare_p1p3_l:	
-	movf	Photodiode_1L,W
-	subwf	Photodiode_3L,0
-	movwf	difference_p1p3_l
+compare_p0p2_p1p3_l:	
+	movf	totalp0p1L, W
+	subwf	totalp2p3L, 0
+	movwf	difference_p0p1_p2p3_l
 	btfsc	STATUS, 0
 	return
-	comf	difference_p1p3_l
-	incf	difference_p1p3_l
+	comf	difference_p0p1_p2p3_l
+	incf	difference_p0p1_p2p3_l
 	movlw	0x01
-	movwf	status_p1p3_l
+	movwf	status_p0p1_p2p3_l
 	return
-	end
 
 
