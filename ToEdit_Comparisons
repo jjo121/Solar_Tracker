@@ -2,6 +2,7 @@
 
 global status_p0p2_p1p3_l, status_p0p2_p1p3_h, status_p0p1_p2p3_l, status_p0p1_p2p3_h
 global difference_p0p2_p1p3_l, difference_p0p2_p1p3_h, difference_p0p1_p2p3_l, difference_p0p1_p2p3_h
+global compare_p0p2_p1p3_h, compare_p0p2_p1p3_l, compare_p0p1_p2p3_h, compare_p0p1_p2p3_l
     
 extrn  Photodiode_0L, Photodiode_0H,Photodiode_1L,Photodiode_1H
 extrn  Photodiode_2L, Photodiode_2H,Photodiode_3L,Photodiode_3H
