@@ -3,51 +3,51 @@
 extrn	LCD_delay_ms,LCD_delay,delayseveral5us,LCD_delay
 extrn   posEW
     
-global  MotorSetup, MoveEast, MoveXZRight,MoveXZLeft,count, tempStore, stop;, ADC_Read,ADC_Setup1,ADC_Read1   
+global  motorsetup, move_xz, move_xy_anticlockwise, move_xy_clockwise, 
+global count, tempStore, stop ;to remove when operation verified
 
 psect udata_acs ;reserves space in RAM
-count: ds 1
-tempStore:ds 1
+
+count:         ds 1
+tempStore:     ds 1
     
 psect	adc_code, class=CODE
 
-MotorSetup:
+motorsetup:
     movlw	0x00
     movwf	TRISC			; portc is output
-    movlw	0x00
-    movwf	TRISD			; portd is output
     movlw	0x01
     movwf	count
     return
 
     
-MoveEast:
+move_xz:
     movlw	0xB4
     movwf	tempStore
-    movf	posEW,W
+    movf	posEW, W
     subwf	tempStore
-    bsf		TRISC,0
+    bsf		TRISC, 0
     bsf		LATC1
     movlw	0x01
     call	LCD_delay_ms
-    movf	posEW,W
+    movf	posEW, W
     call	delayseveral5us
     bcf		LATC1
     movlw	0x11     
     call	LCD_delay_ms
     movlw	0xA5
     call	delayseveral5us
-    movf	tempStore,W
+    movf	tempStore, W
     call	delayseveral5us
     decfsz	count
-    bra		MoveEast
+    bra		move_xz
     movlw	0x0A
     movwf	count
-    bcf		TRISC,0
+    bcf		TRISC, 0
     return
     
-MoveXZRight:
-    bsf		TRISC,0
+move_xy_anticlockwise:
+    bsf		TRISC, 0
     bsf		LATC2
     movlw	0x01
     call	LCD_delay_ms
@@ -57,8 +57,9 @@ MoveXZRight:
     movlw	0x0C     
     call	LCD_delay_ms
     return
-MoveXZLeft:
-    bsf		TRISC,0
+
+move_xy_clockwise:
+    bsf		TRISC, 0
     bsf		LATC2
     movlw	0x01
     call	LCD_delay_ms
@@ -69,12 +70,11 @@ MoveXZLeft:
     call	LCD_delay_ms
     movlw	0xFF     
     call	LCD_delay_ms
-    bcf		TRISC,0
+    bcf		TRISC, 0
     
-  
-    ;bra		MoveXZLeft 
+
 stop:
-    bsf		TRISC,0
+    bsf		TRISC, 0
     bsf		LATC2
     movlw	0x01
     call	LCD_delay_ms
@@ -82,25 +82,9 @@ stop:
     call	delayseveral5us
     bcf		LATC2
     movlw	0x0C     
-    call	LCD_delay_ms
-    ;bra		MoveXZLeft
-    
+    call	LCD_delay_ms    
     return
     
-MoveWest1:
-    
-    bsf		TRISC,0
-    bsf		LATC1
-    movlw	0x01
-    call	LCD_delay_ms
-    movlw	0x01
-    call	delayseveral5us
-    bcf		LATC1
-    movlw	0x13     
-    call	LCD_delay_ms
-    return
-    
-    end
     
 
     
