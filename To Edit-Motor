@@ -1,6 +1,6 @@
 #include <xc.inc>
 
-extrn	LCD_delay_ms,LCD_delay,delayseveral5us,LCD_delay
+extrn	delayseveral5us, delay_ms
 extrn   posEW
     
 global  motorsetup, move_xz, move_xy_anticlockwise, move_xy_clockwise, 
@@ -29,12 +29,12 @@ move_xz:
     bsf		TRISC, 0
     bsf		LATC1
     movlw	0x01
-    call	LCD_delay_ms
+    call	delay_ms
     movf	posEW, W
     call	delayseveral5us
     bcf		LATC1
     movlw	0x11     
-    call	LCD_delay_ms
+    call	delay_ms
     movlw	0xA5
     call	delayseveral5us
     movf	tempStore, W
@@ -50,26 +50,26 @@ move_xy_anticlockwise:
     bsf		TRISC, 0
     bsf		LATC2
     movlw	0x01
-    call	LCD_delay_ms
+    call	delay_ms
     movlw	0x55
     call	delayseveral5us
     bcf		LATC2
     movlw	0x0C     
-    call	LCD_delay_ms
+    call	delay_ms
     return
 
 move_xy_clockwise:
     bsf		TRISC, 0
     bsf		LATC2
     movlw	0x01
-    call	LCD_delay_ms
+    call	delay_ms
     movlw	0x5C
     call	delayseveral5us
     bcf		LATC2
     movlw	0xFF     
-    call	LCD_delay_ms
+    call	delay_ms
     movlw	0xFF     
-    call	LCD_delay_ms
+    call	delay_ms
     bcf		TRISC, 0
     
 
@@ -77,12 +77,12 @@ stop:
     bsf		TRISC, 0
     bsf		LATC2
     movlw	0x01
-    call	LCD_delay_ms
+    call	delay_ms
     movlw	0x5A
     call	delayseveral5us
     bcf		LATC2
     movlw	0x0C     
-    call	LCD_delay_ms    
+    call	delay_ms    
     return
     
     
