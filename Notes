@@ -32,3 +32,14 @@ To stop: 1.43 to 1.48ms pulse
 Will probably use pulses-->
 1.42ms(4B) pulse for clockwise rotation
 1.49ms(56) pulse for anticlockwise rotation
+
+
+Weight
+Accuracy of rotation
+
+Power gain- 2D
+Optimum power
+Power at different positions
+
+PID proportional-integrational-dervative
+Corrections
