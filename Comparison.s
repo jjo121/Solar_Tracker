@@ -76,6 +76,8 @@ average:
 	return
 
 compare_p0p2_p1p3_h:
+	movlw	0x00
+	movwf	status_p0p2_p1p3_h
 	movf	totalp1p3H, W
 	subwf	totalp0p2H, W
 	movwf	difference_p0p2_p1p3_h
@@ -87,7 +89,9 @@ compare_p0p2_p1p3_h:
 	movwf	status_p0p2_p1p3_h
 	bcf	STATUS, 0
 
-compare_p0p2_p1p3_l:	
+compare_p0p2_p1p3_l:
+	movlw	0x00
+	movwf	status_p0p2_p1p3_l
 	movf	totalp1p3L, W
 	subwf	totalp0p2L, W
 	movwf	difference_p0p2_p1p3_l
@@ -100,6 +104,8 @@ compare_p0p2_p1p3_l:
 	return
 
 compare_p0p1_p2p3_h:
+	movlw	0x00
+	movwf	status_p0p1_p2p3_h
 	movf	totalp2p3H, W
 	subwf	totalp0p1H, W
 	movwf	difference_p0p1_p2p3_h
@@ -111,7 +117,9 @@ compare_p0p1_p2p3_h:
 	movwf	status_p0p1_p2p3_h
 	bcf	STATUS, 0
 
-compare_p0p1_p2p3_l:	
+compare_p0p1_p2p3_l:
+	movlw	0x00
+	movwf	status_p0p1_p2p3_l
 	movf	totalp2p3L, W
 	subwf	totalp0p1L, W
 	movwf	difference_p0p1_p2p3_l
