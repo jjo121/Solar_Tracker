@@ -13,13 +13,14 @@ extrn	measurephotodiode, measuresolar, SolarL, SolarH
 extrn	delay_ms 
 
 ;motor variables
-extrn	motorsetup, move_xz, move_xy_anticlockwise, move_xy_clockwise, stop
-
+extrn	motorsetup, move_xz, move_xy_anticlockwise, move_xy_clockwise,move_xy
+extrn	average, move_xz_anticlockwise, move_xz_clockwise
+    
 ;comparison variables
 extrn	status_p0p2_p1p3_l, status_p0p2_p1p3_h, status_p0p1_p2p3_l, status_p0p1_p2p3_h
 extrn	difference_p0p2_p1p3_l, difference_p0p2_p1p3_h, difference_p0p1_p2p3_l, difference_p0p1_p2p3_h
 extrn	compare_p0p2_p1p3_h, compare_p0p2_p1p3_l, compare_p0p1_p2p3_h, compare_p0p1_p2p3_l
-extrn	average, move_xz_anticlockwise, move_xz_clockwise
+
 
 extrn	Convert_ADC_to_Decimal
 
@@ -36,80 +37,81 @@ rst: 	org 0x0
 setup:  call	motorsetup		; Add lines which move motor to 0 positions
 	movlw	0x30
 	movwf	pos_xz
+	movlw	0x30
+	movwf	pos_xy
 	goto	start
 
 move_xz_h:	;Uses status of high bytes to check whether to move East or West
-	movlw	0x01
-	cpfseq	status_p0p1_p2p3_h
-	call	move_xz_anticlockwise
 	movlw	0x00
 	cpfseq	status_p0p1_p2p3_h
+	call	move_xz_anticlockwise
+	movlw	0x01
+	cpfseq	status_p0p1_p2p3_h
 	call	move_xz_clockwise
-	bra	start
-
+	bra	xz_rotation
+	;movlw	0x01;
+	;cpfseq	pos_xz;
+	;bra	
+	;movlw	0xFF;
+	;cpfseq	pos_xz;
+	
 move_xz_l:	;Uses status of high bytes to check whether to move East or West
-	movlw	0x01
-	cpfseq	status_p0p1_p2p3_l
-	call	move_xz_anticlockwise
 	movlw	0x00
 	cpfseq	status_p0p1_p2p3_l
+	call	move_xz_anticlockwise
+	movlw	0x01
+	cpfseq	status_p0p1_p2p3_l
 	call	move_xz_clockwise
-	bra	start	
+	bra	xz_rotation
 	
 
 move_xy_h:	;Uses status of high bytes to check whether to move East or West
-	movlw	0x01
-	cpfseq	status_p0p2_p1p3_h
-	call	move_xy_anticlockwise
 	movlw	0x00
 	cpfseq	status_p0p2_p1p3_h
+	call	move_xy_anticlockwise
+	movlw	0x01
+	cpfseq	status_p0p2_p1p3_h
 	call	move_xy_clockwise
-	bra	start	
+	bra	xy_rotation	
 	
 move_xy_l:	;Uses status of high bytes to check whether to move East or West
-	movlw	0x01
-	cpfseq	status_p0p2_p1p3_l
-	call	move_xy_anticlockwise
 	movlw	0x00
 	cpfseq	status_p0p2_p1p3_l
+	call	move_xy_anticlockwise
+	movlw	0x01
+	cpfseq	status_p0p2_p1p3_l
 	call	move_xy_clockwise
-	bra	start	
+	bra	xy_rotation
 	
-start:	
+start:  ;movlw	2x80
+	;movwf	pos_xz
+	;movlw	0xB4
+	;movwf	pos_xy
+	;call	move_xz
+	;call	move_xy
 	;bra	start
 	
+xy_rotation:
+	call	measurephotodiode
+	call	average
+	call	compare_p0p2_p1p3_h
+	movlw	0x01
+	cpfslt	difference_p0p2_p1p3_h
+	bra	move_xy_h	
 	
-	;call	stop
-	;call	move_xy_anticlockwise
-	;call	stop
-;	bra	start
-;	call	measurephotodiode
-;	call	average
-;	call	compare_p0p2_p1p3_h
-;	movlw	0x01
-;	cpfslt	difference_p0p2_p1p3_h
-;	bra	move_xy_h
+xz_rotation:	
 	call	measurephotodiode
 	call	average
 	call	compare_p0p1_p2p3_h
 	movlw	0x01
 	cpfslt	difference_p0p1_p2p3_h
 	bra	move_xz_h
-	;movlw	0x0A
-	;cpfslt	difference_p0p1_p2p3_l
-	;bra	move_xz_l
-	movlw	0xFF
-	call	delay_ms
-	movlw	0xFF
-	call	delay_ms
-	;bra	start
-	call	measuresolar
-;measureloop:
-	movlw	0x05
-	call	LCD_Send_Char_D
-	;goto	measureloop
-	;call	LCD_Write_Message
-	;call	Convert_ADC_to_Decimal
+	
+	
+	bra	start
+
+		
+end	rst
 	
 	
 end	rst
