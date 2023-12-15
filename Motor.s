@@ -1,17 +1,17 @@
 #include <xc.inc>
 
 extrn	delayseveral5us, delay_ms
-extrn   pos_xz
+extrn   pos_xz, pos_xy
     
-global  motorsetup, move_xz, move_xy_anticlockwise, move_xy_clockwise 
-global count, tempStore, stop ;to remove when operation verified
-global move_xz_anticlockwise, move_xz_clockwise
+global  motorsetup, move_xz, move_xy, move_xy_anticlockwise, move_xy_clockwise 
+global move_xz_anticlockwise, move_xz_clockwise,move_xy
     
 psect udata_acs ;reserves space in RAM
 
-count:         ds 1
-count2:	       ds 1
+countxz:         ds 1
+countxy:	       ds 1
 tempStore:     ds 1
+tempStore2:	ds 1
     
 psect	adc_code, class=CODE
 
@@ -19,9 +19,9 @@ motorsetup:
     movlw	0x00
     movwf	TRISC			; portc is output
     movlw	0x01
-    movwf	count
-    movlw	0x0A
-    movwf	count2
+    movwf	countxz
+    movlw	0x01
+    movwf	countxy
     return
 
     
@@ -30,7 +30,7 @@ move_xz:
     movwf	tempStore
     movf	pos_xz, W
     subwf	tempStore
-    bsf		TRISC, 0
+    ;bsf		TRISC, 0
     bsf		LATC1
     movlw	0x01
     call	delay_ms
@@ -43,13 +43,38 @@ move_xz:
     call	delayseveral5us
     movf	tempStore, W
     call	delayseveral5us
-    decfsz	count
+    decfsz	countxz
     ;bra		move_xz
     movlw	0x01
-    movwf	count
+    movwf	countxz
     ;bcf		TRISC, 0
     return
 
+move_xy:
+    movlw	0xFF
+    movwf	tempStore2
+    movf	pos_xy, W
+    subwf	tempStore2
+    bsf		TRISC, 0
+    bsf		LATC2
+    movlw	0x01
+    call	delay_ms
+    movf	pos_xy, W
+    call	delayseveral5us
+    bcf		LATC2
+    movlw	0x11     
+    call	delay_ms
+    movlw	0xA5
+    call	delayseveral5us
+    movf	tempStore2, W
+    call	delayseveral5us
+    decfsz	countxy
+    ;bra		move_xz
+    movlw	0x01
+    movwf	countxy
+    ;bcf		TRISC, 0
+    return    
+    
 move_xz_anticlockwise:
 	movlw	0x01	;1
 	cpfseq	pos_xz
@@ -63,45 +88,24 @@ move_xz_clockwise:
 	incf	pos_xz
 	call	move_xz
 	return   
-    
+	
 move_xy_anticlockwise:
-    bsf		TRISC, 0
-    bsf		LATC2
-    movlw	0x01
-    call	delay_ms
-    movlw	0x50
-    call	delayseveral5us
-    bcf		LATC2
-    movlw	0xFF     
-    call	delay_ms
-    return
-
+	movlw	0x01	;1
+	cpfseq	pos_xy
+	decf	pos_xy
+	call	move_xy
+	return
 
 move_xy_clockwise:
-    bsf		TRISC, 0
-    bsf		LATC2
-    movlw	0x01
-    call	delay_ms
-    movlw	0x6A
-    call	delayseveral5us
-    bcf		LATC2
-    movlw	0xFF     
-    call	delay_ms
-    return
+	movlw	0xFF	;179
+	cpfseq	pos_xy
+	incf	pos_xy
+	call	move_xy
+	return     
 
-stop:
-    bsf		TRISC, 0
-    bsf		LATC2
-    movlw	0x01
-    call	delay_ms
-    movlw	0x5A
-    call	delayseveral5us
-    bcf		LATC2
-    movlw	0x0C     
-    call	delay_ms    
-    return
     end
     
+
     
 
     
