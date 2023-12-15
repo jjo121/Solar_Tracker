@@ -3,7 +3,7 @@
 global  ADC_Setup0,ADC_Setup1,ADC_Setup2,ADC_Setup3,ADC_Setup4, ADC_Read    
     
 psect	adc_code, class=CODE
-;Set VDD to 4.096V (0x30) for testing purposes if VDD doesn't work 
+;Set (0x30) for testing purposes if VDD doesn't work 
 ;Add to ADC file
 ADC_Setup0:
 	bsf	TRISA, PORTA_RA0_POSN, A  ; pin RA0==AN0 input
