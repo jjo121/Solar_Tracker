@@ -26,7 +26,7 @@ Should swap out LM741 for LM341 due to the fact that the LM341 can perfrom all t
 
 05/12/2023
 -Servo Motors Work!
-Delay of 7.0 microseconds created
+Delay of 4.0 microseconds created
 This was used with an oscilloscope to generate 1.5ms delay to create 1.5ms pulse. From this position only calibration was done. Delay was reduced till motor stopped.
 To stop: 1.43 to 1.48ms pulse
 Will probably use pulses-->
