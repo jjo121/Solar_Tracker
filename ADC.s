@@ -20,7 +20,7 @@ ADC_Setup0:		    ;Set up ADC to read pin 0-Photodiode 0
 	return
 
 ADC_Setup1:                 ;Set up ADC to read pin 1-Photodiode 1
-	bsf	TRISA, PORTA_RA1_POSN, A  ; pin RA0==AN0 input
+	bsf	TRISA, PORTA_RA1_POSN, A  ; pin RA1==AN1 input
 	movlb	0x0f
 	bsf	ANSEL1	    ; set AN0 to analog
 	movlb	0x00
@@ -33,7 +33,7 @@ ADC_Setup1:                 ;Set up ADC to read pin 1-Photodiode 1
 	return	
 
 ADC_Setup2:		    ;Set up ADC to read pin 2-Photodiode 2
-	bsf	TRISA, PORTA_RA2_POSN, A  ; pin RA0==AN0 input
+	bsf	TRISA, PORTA_RA2_POSN, A  ; pin RA2==AN2 input
 	movlb	0x0f
 	bsf	ANSEL2	    ; set AN0 to analog
 	movlb	0x00
@@ -46,7 +46,7 @@ ADC_Setup2:		    ;Set up ADC to read pin 2-Photodiode 2
 	return	
 
 ADC_Setup3:		    ;Set up ADC to read pin 3-Photodiode 3
-	bsf	TRISA, PORTA_RA3_POSN, A  ; pin RA0==AN0 input
+	bsf	TRISA, PORTA_RA3_POSN, A  ; pin RA3==AN3 input
 	movlb	0x0f
 	bsf	ANSEL3	    ; set AN0 to analog
 	movlb	0x00
@@ -58,11 +58,11 @@ ADC_Setup3:		    ;Set up ADC to read pin 3-Photodiode 3
 	movwf   ADCON2, A   ; Fosc/64 clock and acquisition times
 	return
 ADC_Setup4:                 ;Fifth ADC read for Solar Panel if necessary
-	bsf	TRISA, PORTA_RA4_POSN, A  ; pin RA0==AN0 input
+	bsf	TRISA, PORTA_RA5_POSN, A  ; pin RA5==AN5 input
 	movlb	0x0f
-	bsf	ANSEL4	    ; set AN0 to analog
+	bsf	ANSEL5	    ; set AN0 to analog
 	movlb	0x00
-	movlw   00010101B   ; select AN3 for measurement
+	movlw   00010101B   ; select AN5 for measurement
 	movwf   ADCON0, A   ; and turn ADC on
 	movlw   0x30	    ; Select 4.8V as reference
 	movwf   ADCON1,	A   ; 0V for -ve reference and -ve input
