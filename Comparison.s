@@ -128,7 +128,7 @@ compare_p0p1_p2p3_h: ;Upper byte-Difference of left and right photodiode reading
 
 compare_p0p1_p2p3_l: ;Lower byte-Difference of left and right photodiode reading averages
 	movlw	0x00
-	movwf	status_p0p1_p2p3_l ;Initialise sign bit
+	movwf	status_p0p1_p2p3_l 		;Initialise sign bit
 	movf	totalp2p3L, W
 	subwf	totalp0p1L, W
 	movwf	difference_p0p1_p2p3_l		;Store difference
