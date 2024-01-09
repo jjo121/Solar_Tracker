@@ -12,7 +12,7 @@ ADC_Setup0:
 	movlb	0x00
 	movlw   00000001B   ; select AN0 for measurement
 	movwf   ADCON0, A   ; and turn ADC on
-	movlw   0x30	    ; Select VDD as reference
+	movlw   0x30	    ; Select 4.8V as reference
 	movwf   ADCON1,	A   ; 0V for -ve reference and -ve input
 	movlw   0xF6	    ; Right justified output
 	movwf   ADCON2, A   ; Fosc/64 clock and acquisition times
@@ -25,7 +25,7 @@ ADC_Setup1:
 	movlb	0x00
 	movlw   00000101B   ; select AN1 for measurement
 	movwf   ADCON0, A   ; and turn ADC on
-	movlw   0x30	    ; Select VDD as reference
+	movlw   0x30	    ; Select 4.8V as reference
 	movwf   ADCON1,	A   ; 0V for -ve reference and -ve input
 	movlw   0xF6	    ; Right justified output
 	movwf   ADCON2, A   ; Fosc/64 clock and acquisition times
@@ -38,7 +38,7 @@ ADC_Setup2:
 	movlb	0x00
 	movlw   00001001B   ; select AN2 for measurement
 	movwf   ADCON0, A   ; and turn ADC on
-	movlw   0x30	    ; Select VDD as reference
+	movlw   0x30	    ; Select 4.8V as reference
 	movwf   ADCON1,	A   ; 0V for -ve reference and -ve input
 	movlw   0xF6	    ; Right justified output
 	movwf   ADCON2, A   ; Fosc/64 clock and acquisition times
@@ -51,7 +51,7 @@ ADC_Setup3:
 	movlb	0x00
 	movlw   00001101B   ; select AN3 for measurement
 	movwf   ADCON0, A   ; and turn ADC on
-	movlw   0x30	    ; Select VDD as reference
+	movlw   0x30	    ; Select 4.8V as reference
 	movwf   ADCON1,	A   ; 0V for -ve reference and -ve input
 	movlw   0xF6	    ; Right justified output
 	movwf   ADCON2, A   ; Fosc/64 clock and acquisition times
@@ -63,7 +63,7 @@ ADC_Setup4:
 	movlb	0x00
 	movlw   00010101B   ; select AN3 for measurement
 	movwf   ADCON0, A   ; and turn ADC on
-	movlw   0x30	    ; Select VDD as reference
+	movlw   0x30	    ; Select 4.8V as reference
 	movwf   ADCON1,	A   ; 0V for -ve reference and -ve input
 	movlw   0xF6	    ; Right justified output
 	movwf   ADCON2, A   ; Fosc/64 clock and acquisition times
