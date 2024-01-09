@@ -1,5 +1,7 @@
 #include <xc.inc>
 
+;Contians delays
+
 global delayseveral5us, delay_ms
 psect	udata_acs; named variables in access ram
 
@@ -14,7 +16,7 @@ ms_tmp:	                ds 1
 ms_counter:	            ds 1
 
 psect	lcd_code,class=CODE
-delayseveral5us:                 ;delay for 5.5 microseconds a certain number of times (given in WR)
+delayseveral5us:                 ;delay for 4.0 microseconds a certain number of times (given in WR)
     movwf   delayseveral5count
     bra	    delay5us
 leaveloop:
