@@ -46,12 +46,12 @@ setup:  call	motorsetup		; Initialise position variables
 
 move_xz_h:	;Uses status of high bytes to check whether to move up or down
 	movlw	0x00
-	cpfseq	status_p0p1_p2p3_h	;Check if sign bit is 1 or 0
-	call	move_xz_anticlockwise
+	cpfseq	status_p0p1_p2p3_h	;Check if sign bit is 0
+	call	move_xz_anticlockwise	;It is 0. Top photodiode readings greater. Move up.
 	movlw	0x01
-	cpfseq	status_p0p1_p2p3_h
-	call	move_xz_clockwise
-	bra	xz_rotation
+	cpfseq	status_p0p1_p2p3_h	;Check if sign bit is 1
+	call	move_xz_clockwise	;It is 1. Bottom photodiode readings greater. Move down.
+	bra	xz_rotation		;Check if we need to move more in x-z direction.
 	;movlw	0x01;
 	;cpfseq	pos_xz;
 	;bra	
@@ -60,31 +60,31 @@ move_xz_h:	;Uses status of high bytes to check whether to move up or down
 	
 move_xz_l:	;Uses status of low bytes to check whether to move up or down- Did not have time to implement
 	movlw	0x00
-	cpfseq	status_p0p1_p2p3_l	;Check if sign bit is 1 or 0
-	call	move_xz_anticlockwise
+	cpfseq	status_p0p1_p2p3_l	;Check if sign bit is 0
+	call	move_xz_anticlockwise	;It is 0. Top photodiode readings greater. Move up.
 	movlw	0x01
-	cpfseq	status_p0p1_p2p3_l
-	call	move_xz_clockwise
-	bra	xz_rotation
+	cpfseq	status_p0p1_p2p3_l	;Check if sign bit is 1
+	call	move_xz_clockwise	;It is 1. Bottom photodiode readings greater. Move down.
+	bra	xz_rotation		;Check if we need to move more in x-z direction.
 	
 
 move_xy_h:	;Uses status of high bytes to check whether to move left or right
 	movlw	0x00
-	cpfseq	status_p0p2_p1p3_h	;Check if sign bit is 1 or 0
-	call	move_xy_anticlockwise
+	cpfseq	status_p0p2_p1p3_h	;Check if sign bit is 0
+	call	move_xy_anticlockwise	;It is 0. Left photodiode readings greater. Move left.
 	movlw	0x01
-	cpfseq	status_p0p2_p1p3_h
-	call	move_xy_clockwise
-	bra	xy_rotation	
+	cpfseq	status_p0p2_p1p3_h	;Check if sign bit is 1
+	call	move_xy_clockwise	;It is 1. Right photodiode readings greater. Move Right.
+	bra	xy_rotation		;Check if we need to move more in x-y direction.
 	
 move_xy_l:	;Uses status of low bytes to check whether to move left or right- Did not have time to implement
 	movlw	0x00
-	cpfseq	status_p0p2_p1p3_l	;Check if sign bit is 1 or 0
-	call	move_xy_anticlockwise	
+	cpfseq	status_p0p2_p1p3_l	;Check if sign bit is 0
+	call	move_xy_anticlockwise	;It is 0. Left photodiode readings greater. Move left.
 	movlw	0x01
-	cpfseq	status_p0p2_p1p3_l
-	call	move_xy_clockwise
-	bra	xy_rotation
+	cpfseq	status_p0p2_p1p3_l	;Check if sign bit is 1
+	call	move_xy_clockwise	;It is 1. Right photodiode readings greater. Move Right.
+	bra	xy_rotation		;Check if we need to move more in x-y direction.
 	
 start:  ;movlw	2x80 			;Lines used to set panel to stationary position when conducting investigations
 	;movwf	pos_xz
