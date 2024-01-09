@@ -1,5 +1,7 @@
 #include <xc.inc>
 
+;Contains procedures used to read all the photodiodes
+;Can read in Solar panel data if necessary
 
 global	measurephotodiode, measuresolar
     
@@ -14,7 +16,7 @@ extrn	ADC_Setup0, ADC_Setup1, ADC_Setup2, ADC_Setup3, ADC_Setup4, ADC_Read
     
 psect	udata_acs
 	
-Photodiode_0L:	    ds	1
+Photodiode_0L:	    ds	1		;Variables to store data read in through PORTA via ADC. High byte and low byte stored seperately.
 Photodiode_0H:	    ds	1
 Photodiode_1L:	    ds	1
 Photodiode_1H:	    ds	1
@@ -27,43 +29,43 @@ SolarH:		    ds	1
 	
 psect	adc_code, class=CODE
 
-measurephotodiode:
+measurephotodiode:		;Measure all photodiode readings sequentially
 	call	ADC_Setup0
 	movlw	0x01
 	call	delay_ms
 	call    ADC_Read
 	call    ADC_Read
 	movf    ADRESH,W, A
-	movwf   Photodiode_0H    ;high byte stored
+	movwf   Photodiode_0H    ;high byte stored of photodiode 0
 	movf    ADRESL,W, A
-	movwf   Photodiode_0L    ;low byte stored
+	movwf   Photodiode_0L    ;low byte stored of photodiode 0
 	call	ADC_Setup1
 	movlw	0x01
 	call	delay_ms
 	call    ADC_Read
 	call    ADC_Read
 	movf    ADRESH,W, A
-	movwf   Photodiode_1H    ;high byte stored
+	movwf   Photodiode_1H    ;high byte stored of photodiode 1
 	movf    ADRESL,W, A
-	movwf   Photodiode_1L    ;low byte stored
+	movwf   Photodiode_1L    ;low byte stored of photodiode 1
 	call	ADC_Setup2
 	movlw	0x01
 	call	delay_ms
 	call    ADC_Read
 	call    ADC_Read
 	movf    ADRESH,W, A
-	movwf   Photodiode_2H    ;high byte stored
+	movwf   Photodiode_2H    ;high byte stored of photodiode 2
 	movf    ADRESL,W, A
-	movwf   Photodiode_2L    ;low byte stored
+	movwf   Photodiode_2L    ;low byte stored of photodiode 2
 	call	ADC_Setup3
 	movlw	0x01
 	call	delay_ms
 	call    ADC_Read
 	call    ADC_Read
 	movf    ADRESH,W, A
-	movwf   Photodiode_3H    ;high byte stored
+	movwf   Photodiode_3H    ;high byte stored of photodiode 3
 	movf    ADRESL,W, A
-	movwf   Photodiode_3L    ;low byte stored
+	movwf   Photodiode_3L    ;low byte stored of photodiode 3
 	return
 
 measuresolar:
@@ -73,8 +75,8 @@ measuresolar:
 	call    ADC_Read
 	call    ADC_Read
 	movf    ADRESH,W, A
-	movwf   SolarH		 ;high byte stored
+	movwf   SolarH		 ;high byte stored of Solar panel 
 	movf    ADRESL,W, A
-	movwf   SolarL    ;low byte stored
+	movwf   SolarL 		 ;low byte stored of Solar panel
 	end
     
