@@ -1,7 +1,7 @@
 #include <xc.inc>
 
 ;Contains procedures used to read all the photodiodes
-;Can read in Solar panel data if necessary
+;Can read in Solar panel data if necessary- We did not use due to time constraints
 
 global	measurephotodiode, measuresolar
     
