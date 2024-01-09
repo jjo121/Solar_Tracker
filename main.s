@@ -1,5 +1,7 @@
 #include <xc.inc>
 
+;Main program loop
+
 global	pos_xz, pos_xy
 
 extrn	 LCD_Write_Hex, LCD_Write_Message , LCD_Send_Char_D
@@ -26,7 +28,8 @@ extrn	Convert_ADC_to_Decimal
 
 psect	udata_acs   			; reserve data space in access ram
 
-pos_xz:		    ds	1
+;Declare position variables for each axis
+pos_xz:		    ds	1		
 pos_xy:		    ds  1
 
     
@@ -34,16 +37,16 @@ psect	code, abs
 rst: 	org 0x0
  	goto	setup
 
-setup:  call	motorsetup		; Add lines which move motor to 0 positions
+setup:  call	motorsetup		; Initialise position variables
 	movlw	0x30
 	movwf	pos_xz
 	movlw	0x30
 	movwf	pos_xy
 	goto	start
 
-move_xz_h:	;Uses status of high bytes to check whether to move East or West
+move_xz_h:	;Uses status of high bytes to check whether to move up or down
 	movlw	0x00
-	cpfseq	status_p0p1_p2p3_h
+	cpfseq	status_p0p1_p2p3_h	;Check if sign bit is 1 or 0
 	call	move_xz_anticlockwise
 	movlw	0x01
 	cpfseq	status_p0p1_p2p3_h
@@ -55,9 +58,9 @@ move_xz_h:	;Uses status of high bytes to check whether to move East or West
 	;movlw	0xFF;
 	;cpfseq	pos_xz;
 	
-move_xz_l:	;Uses status of high bytes to check whether to move East or West
+move_xz_l:	;Uses status of low bytes to check whether to move up or down- Did not have time to implement
 	movlw	0x00
-	cpfseq	status_p0p1_p2p3_l
+	cpfseq	status_p0p1_p2p3_l	;Check if sign bit is 1 or 0
 	call	move_xz_anticlockwise
 	movlw	0x01
 	cpfseq	status_p0p1_p2p3_l
@@ -65,25 +68,25 @@ move_xz_l:	;Uses status of high bytes to check whether to move East or West
 	bra	xz_rotation
 	
 
-move_xy_h:	;Uses status of high bytes to check whether to move East or West
+move_xy_h:	;Uses status of high bytes to check whether to move left or right
 	movlw	0x00
-	cpfseq	status_p0p2_p1p3_h
+	cpfseq	status_p0p2_p1p3_h	;Check if sign bit is 1 or 0
 	call	move_xy_anticlockwise
 	movlw	0x01
 	cpfseq	status_p0p2_p1p3_h
 	call	move_xy_clockwise
 	bra	xy_rotation	
 	
-move_xy_l:	;Uses status of high bytes to check whether to move East or West
+move_xy_l:	;Uses status of low bytes to check whether to move left or right- Did not have time to implement
 	movlw	0x00
-	cpfseq	status_p0p2_p1p3_l
-	call	move_xy_anticlockwise
+	cpfseq	status_p0p2_p1p3_l	;Check if sign bit is 1 or 0
+	call	move_xy_anticlockwise	
 	movlw	0x01
 	cpfseq	status_p0p2_p1p3_l
 	call	move_xy_clockwise
 	bra	xy_rotation
 	
-start:  ;movlw	2x80
+start:  ;movlw	2x80 			;Lines used to set panel to stationary position when conducting investigations
 	;movwf	pos_xz
 	;movlw	0xB4
 	;movwf	pos_xy
@@ -91,21 +94,21 @@ start:  ;movlw	2x80
 	;call	move_xy
 	;bra	start
 	
-xy_rotation:
-	call	measurephotodiode
-	call	average
-	call	compare_p0p2_p1p3_h
-	movlw	0x01
-	cpfslt	difference_p0p2_p1p3_h
-	bra	move_xy_h	
+xy_rotation:				;Check if movement is required along x-y axis
+	call	measurephotodiode	;Get photodiode readings
+	call	average			;Get avergaes of readings
+	call	compare_p0p2_p1p3_h	;Get difference of left and right means
+	movlw	0x01		
+	cpfslt	difference_p0p2_p1p3_h	;Compare difference against tolerance
+	bra	move_xy_h		;Branch to deduction of direction of movement to move
 	
-xz_rotation:	
-	call	measurephotodiode
-	call	average
-	call	compare_p0p1_p2p3_h
+xz_rotation:				;Check if movement is required along x-z axis
+	call	measurephotodiode	;Get photodiode readings
+	call	average			;Get avergaes of readings
+	call	compare_p0p1_p2p3_h	;Get difference of left and right means
 	movlw	0x01
-	cpfslt	difference_p0p1_p2p3_h
-	bra	move_xz_h
+	cpfslt	difference_p0p1_p2p3_h	;Compare difference against tolerance
+	bra	move_xz_h		;Branch to deduction of direction of movement to move
 	
 	
 	bra	start
